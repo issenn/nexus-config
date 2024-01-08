@@ -1,0 +1,83 @@
+---
+
+version: '3.9'
+
+name: nexus
+
+services:
+  nexus:
+    image: sonatype/nexus3:3.63.0
+    restart: unless-stopped
+    stop_grace_period: 30s
+    # command: ["executable", "arg"]
+    ports:
+      - "8081:8081"
+    networks:
+      nexus:
+        aliases:
+          - "nexus"
+    # healthcheck:
+    #   test: ["CMD", "dnscrypt-proxy", "-config", "/etc/dnscrypt-proxy/dnscrypt-proxy.toml", "-resolve", "captive.apple.com"]
+    #   interval: 3s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 30s
+    # user: "${UID}:${GID}"
+    # security_opt:
+    #   - no-new-privileges:true
+    #   - label:disable
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - NET_BIND_SERVICE
+    # ulimits:
+    #   nproc:
+    #     soft: -1
+    #     hard: -1
+    #   nofile:
+    #     soft: 524288
+    #     hard: 1048576
+    #   core:
+    #     soft: -1
+    #     hard: -1
+    # deploy:
+    # #   mode: global
+    # #   restart_policy:
+    # #     condition: on-failure
+    #   resources:
+    #     limits:
+    #       cpus: '0.70'
+    #       memory: 1G
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 512M
+    env_file:
+      - ./.env
+    environment:
+      TZ: "${TZ:-Asia/Shanghai}"
+      DEFAULT_TZ: "${DEFAULT_TZ:-Asia/Shanghai}"
+      # HTTP_PROXY: "${HTTP_PROXY}"
+      # HTTPS_PROXY: "${HTTPS_PROXY}"
+      # NEXUS_CONTEXT: ${NEXUS_CONTEXT}
+    volumes:
+      - type: bind
+        source: "/usr/share/zoneinfo/Asia/Shanghai"
+        target: "/usr/share/zoneinfo/Asia/Shanghai"
+        read_only: true
+      # - type: bind
+      #   source: "./data"
+      #   target: "/nexus-data"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.docker.network=traefik"
+
+
+# docker network create nexus
+networks:
+  # default:
+  #   # driver: bridge
+  #   external: true
+  nexus:
+    name: "nexus"
+    # driver: "bridge"
+    external: true
